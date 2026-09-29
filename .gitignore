@@ -1,0 +1,138 @@
+# ==================================================================== #
+#                       SoundDesk Monorepo .gitignore                  #
+# ==================================================================== #
+
+# -------------------------------------------------------------------- #
+# Operating System & Cache
+# -------------------------------------------------------------------- #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# -------------------------------------------------------------------- #
+# IDEs, Editors & Workspaces
+# -------------------------------------------------------------------- #
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# -------------------------------------------------------------------- #
+# Environment & Secrets (Never commit secrets)
+# -------------------------------------------------------------------- #
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.keystore
+*.jks
+key.properties
+local.properties
+
+# -------------------------------------------------------------------- #
+# Flutter & Dart (Mobile App)
+# -------------------------------------------------------------------- #
+**/doc/api/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.pub-cache/
+**/.pub/
+**/build/
+**/coverage/
+.widget_preview/
+
+# Android generated
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/android/.gradle/
+**/android/captures/
+**/android/app/build/
+
+# iOS generated
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/.last_build_id
+**/ios/Runner.xcworkspace/xcuserdata/
+**/ios/Runner.xcodeproj/xcuserdata/
+**/ios/DerivedData/
+
+# Symbolication & Obfuscation
+app.*.symbols
+app.*.map.json
+
+# -------------------------------------------------------------------- #
+# Python (API / Backend)
+# -------------------------------------------------------------------- #
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Python Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python Tooling & Linters
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+.nox/
+.tox/
+
+# -------------------------------------------------------------------- #
+# Databases & Storage
+# -------------------------------------------------------------------- #
+*.sqlite
+*.sqlite3
+*.db
+storage/
+
+# -------------------------------------------------------------------- #
+# Logs & Temporary Files
+# -------------------------------------------------------------------- #
+*.log
+*.tmp
+*.bak
+docker-compose.override.yml
