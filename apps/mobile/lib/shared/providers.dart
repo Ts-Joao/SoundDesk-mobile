@@ -265,6 +265,18 @@ class PlayerNotifier extends Notifier<PlayerState> {
     state = state.copyWith(song: n, position: Duration.zero);
   }
 
+  void stop() {
+    _timer?.cancel();
+    _timer = null;
+    state = state.copyWith(playing: false);
+  }
+
+  void close() {
+    _timer?.cancel();
+    _timer = null;
+    state = const PlayerState();
+  }
+
   void seek(Duration d) => state = state.copyWith(position: d);
   void setVolume(double v) => state = state.copyWith(volume: v);
 }

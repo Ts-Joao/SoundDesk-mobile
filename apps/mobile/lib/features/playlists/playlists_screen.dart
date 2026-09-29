@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/theme/app_theme.dart';
 import '../../shared/models/models.dart';
 import '../../shared/providers.dart';
 import '../../shared/widgets/components.dart';
@@ -38,13 +39,32 @@ class PlaylistsScreen extends ConsumerWidget {
         const NowPlayingAction(),
         AppIconButton(icon: Icons.file_download_outlined, tooltip: 'Importar playlist', onPressed: () => context.push('/import')),
       ]),
-      floatingActionButton: FloatingActionButton.extended(
-        elevation: 0, focusElevation: 0, hoverElevation: 0, highlightElevation: 0,
-        onPressed: () async {
-          final n = await showNameDialog(context, title: 'Nova playlist', confirm: 'Criar');
-          if (n != null) ref.read(playlistsProvider.notifier).create(n);
-        },
-        icon: const Icon(Icons.add_rounded), label: const Text('Nova playlist'),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: Tk.primaryGradient,
+          borderRadius: BorderRadius.circular(Tk.rFull),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.35),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          focusElevation: 0,
+          hoverElevation: 0,
+          highlightElevation: 0,
+          onPressed: () async {
+            final n = await showNameDialog(context, title: 'Nova playlist', confirm: 'Criar');
+            if (n != null) ref.read(playlistsProvider.notifier).create(n);
+          },
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Nova playlist', style: TextStyle(fontWeight: FontWeight.w700)),
+        ),
       ),
       body: lists.isEmpty
           ? EmptyState(icon: Icons.queue_music_rounded, title: 'Nenhuma playlist ainda',
