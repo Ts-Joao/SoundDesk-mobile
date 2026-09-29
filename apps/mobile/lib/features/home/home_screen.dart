@@ -25,6 +25,7 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(_greeting),
         actions: [
+          const NowPlayingAction(),
           AppIconButton(icon: Icons.search_rounded, tooltip: 'Buscar', onPressed: () => context.push('/search')),
           AppIconButton(icon: Icons.settings_outlined, tooltip: 'Configurações', onPressed: () => context.push('/settings')),
         ],
@@ -43,7 +44,7 @@ class HomeScreen extends ConsumerWidget {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: Tk.s16),
                   itemCount: recent.length, separatorBuilder: (_, __) => const SizedBox(width: Tk.s12),
-                  itemBuilder: (_, i) => AlbumCard(title: recent[i].title, subtitle: recent[i].artist, seed: recent[i].album,
+                  itemBuilder: (_, i) => AlbumCard(width: 140, title: recent[i].title, subtitle: recent[i].artist, seed: recent[i].album,
                       onTap: () => ref.read(playerProvider.notifier).play(recent[i], recent)),
                 ),
               ),
@@ -62,7 +63,7 @@ class HomeScreen extends ConsumerWidget {
               : ListView.separated(
                   scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: Tk.s16),
                   itemCount: playlists.length, separatorBuilder: (_, __) => const SizedBox(width: Tk.s12),
-                  itemBuilder: (_, i) => AlbumCard(title: playlists[i].name, subtitle: '${playlists[i].songIds.length} músicas',
+                  itemBuilder: (_, i) => AlbumCard(width: 140, title: playlists[i].name, subtitle: '${playlists[i].songIds.length} músicas',
                       seed: playlists[i].id, onTap: () => context.push('/playlists/${playlists[i].id}')),
                 ),
         ),

@@ -35,6 +35,7 @@ class PlaylistsScreen extends ConsumerWidget {
     final lists = ref.watch(playlistsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Playlists'), actions: [
+        const NowPlayingAction(),
         AppIconButton(icon: Icons.file_download_outlined, tooltip: 'Importar playlist', onPressed: () => context.push('/import')),
       ]),
       floatingActionButton: FloatingActionButton.extended(

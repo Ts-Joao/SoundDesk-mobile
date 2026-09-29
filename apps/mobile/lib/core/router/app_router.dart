@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/downloads/downloads_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/import/import_screen.dart';
+import '../../features/library/album_detail_screen.dart';
 import '../../features/library/library_screen.dart';
 import '../../features/player/full_player_screen.dart';
 import '../../features/playlists/playlist_detail_screen.dart';
@@ -33,6 +34,7 @@ final appRouter = GoRouter(
       ],
     ),
     GoRoute(path: '/playlists/:id', builder: (_, s) => PlaylistDetailScreen(id: s.pathParameters['id']!)),
+    GoRoute(path: '/albums/:name', builder: (_, s) => AlbumDetailScreen(name: Uri.decodeComponent(s.pathParameters['name']!))),
     GoRoute(path: '/search', builder: (_, __) => const SearchScreen()),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
     GoRoute(path: '/import', builder: (_, __) => const ImportScreen()),

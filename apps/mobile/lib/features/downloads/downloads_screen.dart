@@ -20,7 +20,7 @@ class DownloadsScreen extends ConsumerWidget {
       ]);
     }
     return Scaffold(
-      appBar: AppBar(title: const Text('Downloads')),
+      appBar: AppBar(title: const Text('Downloads'), actions: const [NowPlayingAction()]),
       body: all.isEmpty
           ? const EmptyState(icon: Icons.download_outlined, title: 'Nenhum download',
               message: 'As músicas que você baixar aparecem aqui, com o progresso de cada uma.')

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../shared/providers.dart';
 import '../../shared/widgets/components.dart';
 
-class AppShell extends StatelessWidget {
+class AppShell extends ConsumerWidget {
   final StatefulNavigationShell shell;
   const AppShell({super.key, required this.shell});
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showMiniPlayer = ref.watch(miniPlayerVisibleProvider);
+    return Scaffold(
         body: shell,
         bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
-          const MiniPlayer(),
+          if (showMiniPlayer) const MiniPlayer(),
           NavigationBar(
             selectedIndex: shell.currentIndex,
             onDestinationSelected: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex),
@@ -22,4 +26,5 @@ class AppShell extends StatelessWidget {
           ),
         ]),
       );
+  }
 }

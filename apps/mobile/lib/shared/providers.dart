@@ -8,6 +8,32 @@ import 'models/models.dart';
 final libraryRepositoryProvider = Provider<LibraryRepository>((_) => MockLibraryRepository());
 final songsProvider = FutureProvider<List<Song>>((ref) => ref.watch(libraryRepositoryProvider).songs());
 
+/// Derived, cached by Riverpod: only recomputes when the song list actually
+/// changes, so Library/Albums tab switches don't re-scan the catalog.
+final albumsProvider = Provider<List<AlbumInfo>>((ref) {
+  final songs = ref.watch(songsProvider).valueOrNull ?? const [];
+  final byAlbum = <String, List<Song>>{};
+  for (final s in songs) {
+    byAlbum.putIfAbsent(s.album, () => []).add(s);
+  }
+  return [for (final e in byAlbum.entries) AlbumInfo(name: e.key, artist: e.value.first.artist, songs: e.value)];
+});
+
+final artistsProvider = Provider<Map<String, int>>((ref) {
+  final songs = ref.watch(songsProvider).valueOrNull ?? const [];
+  final map = <String, int>{};
+  for (final s in songs) {
+    map[s.artist] = (map[s.artist] ?? 0) + 1;
+  }
+  return map;
+});
+
+class AlbumInfo {
+  final String name, artist;
+  final List<Song> songs;
+  const AlbumInfo({required this.name, required this.artist, required this.songs});
+}
+
 // ---- Settings ----
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
@@ -30,6 +56,34 @@ class QualityNotifier extends Notifier<String> {
   void set(String v) => state = v;
 }
 final audioQualityProvider = NotifierProvider<QualityNotifier, String>(QualityNotifier.new);
+
+/// Whether the persistent mini player shows above the nav bar.
+/// Settings → Player → "Mostrar mini player".
+class MiniPlayerVisibilityNotifier extends Notifier<bool> {
+  @override
+  bool build() => true; // persist with SharedPreferences later
+  void set(bool v) => state = v;
+}
+final miniPlayerVisibleProvider = NotifierProvider<MiniPlayerVisibilityNotifier, bool>(MiniPlayerVisibilityNotifier.new);
+
+/// Root folder for SoundDesk/{Music,Albums,Playlists,Covers,Downloads}.
+/// Backed today by a plain string; swap for path_provider + file_picker
+/// (Android SAF / iOS document picker) without touching the UI.
+class StorageLocationNotifier extends Notifier<String> {
+  @override
+  String build() => '/storage/emulated/0/SoundDesk';
+
+  /// Returns null (accepted) or an error message.
+  String? trySet(String path) {
+    final p = path.trim();
+    if (!p.startsWith('/')) return 'Informe um caminho absoluto.';
+    if (p.length < 3) return 'Caminho muito curto.';
+    state = p; // TODO: on real FS, move/relink existing downloads here
+    return null;
+  }
+}
+final storageLocationProvider = NotifierProvider<StorageLocationNotifier, String>(StorageLocationNotifier.new);
+const storageSubfolders = ['Music', 'Albums', 'Playlists', 'Covers', 'Downloads'];
 
 // ---- Playlists ----
 class PlaylistsNotifier extends Notifier<List<Playlist>> {
@@ -67,6 +121,7 @@ class DownloadsNotifier extends Notifier<List<DownloadTask>> {
   }
 
   void _ensureTimer() {
+    if (!state.any((t) => t.status == DownloadStatus.downloading || t.status == DownloadStatus.queued)) return;
     _timer ??= Timer.periodic(const Duration(milliseconds: 500), (_) => _tick());
   }
 
@@ -86,6 +141,10 @@ class DownloadsNotifier extends Notifier<List<DownloadTask>> {
           t
     ];
     state = list;
+    if (!list.any((t) => t.status == DownloadStatus.downloading || t.status == DownloadStatus.queued)) {
+      _timer?.cancel();
+      _timer = null;
+    }
   }
 
   void enqueue(Song s) {
@@ -99,9 +158,57 @@ class DownloadsNotifier extends Notifier<List<DownloadTask>> {
     _ensureTimer();
   }
 
-  void remove(String id) => state = state.where((t) => t.id != id).toList();
+  void remove(String id) {
+    state = state.where((t) => t.id != id).toList();
+    if (!state.any((t) => t.status == DownloadStatus.downloading || t.status == DownloadStatus.queued)) {
+      _timer?.cancel();
+      _timer = null;
+    }
+  }
 }
 final downloadsProvider = NotifierProvider<DownloadsNotifier, List<DownloadTask>>(DownloadsNotifier.new);
+
+// ---- Album zip download ----
+enum AlbumZipPhase { idle, preparing, zipping, done, error }
+
+class AlbumZipState {
+  final AlbumZipPhase phase;
+  final int done, total;
+  const AlbumZipState({this.phase = AlbumZipPhase.idle, this.done = 0, this.total = 0});
+  AlbumZipState copyWith({AlbumZipPhase? phase, int? done}) =>
+      AlbumZipState(phase: phase ?? this.phase, done: done ?? this.done, total: total);
+}
+
+/// One notifier instance per album (keyed by album name) via .family, so
+/// progress for one album never rebuilds another album's screen.
+class AlbumZipNotifier extends FamilyNotifier<AlbumZipState, String> {
+  Timer? _timer;
+  @override
+  AlbumZipState build(String arg) {
+    ref.onDispose(() => _timer?.cancel());
+    return const AlbumZipState();
+  }
+
+  void start(int songCount) {
+    _timer?.cancel();
+    state = AlbumZipState(phase: AlbumZipPhase.preparing, done: 0, total: songCount);
+    var i = 0;
+    _timer = Timer.periodic(const Duration(milliseconds: 450), (t) {
+      i++;
+      if (i <= songCount) {
+        state = state.copyWith(phase: AlbumZipPhase.preparing, done: i);
+      } else if (i == songCount + 1) {
+        state = state.copyWith(phase: AlbumZipPhase.zipping);
+      } else {
+        state = state.copyWith(phase: AlbumZipPhase.done);
+        t.cancel(); // TODO: write real zip via `archive` pkg into storageLocationProvider path
+      }
+    });
+  }
+
+  void reset() { _timer?.cancel(); state = const AlbumZipState(); }
+}
+final albumZipProvider = NotifierProvider.family<AlbumZipNotifier, AlbumZipState, String>(AlbumZipNotifier.new);
 
 // ---- Player (fake clock; swap for just_audio) ----
 class PlayerState {
