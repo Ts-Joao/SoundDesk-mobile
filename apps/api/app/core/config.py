@@ -5,6 +5,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+    SPOTIPY_CLIENT_ID: str = ""
+    SPOTIPY_CLIENT_SECRET: str = ""
 
     model_config = SettingsConfigDict(
         env_file="../../.env",
