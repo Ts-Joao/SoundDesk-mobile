@@ -11,7 +11,7 @@ class ProviderFactory:
         parsed_url = urlparse(url)
         domain = parsed_url.netloc.lower()
 
-        if "youtube.com" in domain or "youtu.com" in domain:
+        if "youtube.com" in domain or "youtu.be" in domain:
             return YoutubeProvider()
         elif "spotify.com" in domain or "spotify.link" in domain:
             return SpotifyProvider()
