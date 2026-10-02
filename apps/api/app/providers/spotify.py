@@ -42,7 +42,6 @@ class SpotifyProvider(ImportProvider):
         return ""
 
     def extract_track(self, url: str) -> Dict[str, Any]:
-        """Extrai os dados do Spotify e já acha o link correspondente no YouTube"""
         url = self._resolve_short_link(url)
 
         try:
@@ -58,8 +57,8 @@ class SpotifyProvider(ImportProvider):
                 "title": title,
                 "artist": artist,
                 "duration": track['duration_ms'] / 1000,
-                "thumbnail": track['album']['images'][0]['url'] if track['album']['images'] else None,
-                "source": "spotify",
+                "thumbnail_url": track['album']['images'][0]['url'] if track['album']['images'] else None,
+                "source_url": "spotify",
                 "original_url": url,
                 "youtube_url": youtube_url
             }
@@ -67,7 +66,6 @@ class SpotifyProvider(ImportProvider):
             raise ValueError(f"Erro ao extrair faixa do Spotify: {str(e)}")
 
     def extract_playlist(self, url: str) -> List[Dict[str, Any]]:
-        """Extrai todas as faixas e lida com a paginação do Spotify"""
         url = self._resolve_short_link(url)
         tracks = []
 
@@ -90,8 +88,8 @@ class SpotifyProvider(ImportProvider):
                         "title": title,
                         "artist": artist,
                         "duration": track['duration_ms'] / 1000,
-                        "thumbnail": track['album']['images'][0]['url'] if track['album']['images'] else None,
-                        "source": "spotify",
+                        "thumbnail_url": track['album']['images'][0]['url'] if track['album']['images'] else None,
+                        "source_url": "spotify",
                         "youtube_query": search_query
                     })
 

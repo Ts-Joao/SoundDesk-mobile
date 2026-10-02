@@ -52,8 +52,8 @@ class YoutubeProvider(ImportProvider):
             "title": data.get("title"),
             "artist": data.get("channel") or data.get("uploader"),
             "duration": data.get("duration"),
-            "thumbnail": data.get("thumbnail"),
-            "source": "youtube",
+            "thumbnail_url": data.get("thumbnail"),
+            "source_url": "youtube",
             "url": data.get("webpage_url") or f"https://www.youtube.com/watch?v={data.get('id')}",
             "download_info": {
                 "extractor": data.get("extractor"),
