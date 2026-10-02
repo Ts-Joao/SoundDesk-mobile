@@ -8,6 +8,7 @@ from starlette.responses import JSONResponse
 from app.core.config import settings
 from app.core.exceptions import CustomException
 from app.health.router import router as health_router
+from app.imports.router import router as imports_router
 
 app = FastAPI(
     title="SoundDesk mobile API",
@@ -62,5 +63,6 @@ async def global_unhandled_exception_handler(request: Request, exc: Exception):
     )
 
 api_router.include_router(health_router)
+api_router.include_router(imports_router)
 
 app.include_router(api_router)
