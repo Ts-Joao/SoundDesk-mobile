@@ -4,14 +4,14 @@ from pydantic import BaseModel
 
 
 class TrackSchema(BaseModel):
-    title: str
-    artist: str
-    duration: int
-    thumbnail_url: str
-    source_url: str
+    title: str | None
+    artist: str | None
+    duration: int | None
+    thumbnail_url: str | None
+    source_url: str | None
 
 class PlaylistSchema(BaseModel):
-    name: str
-    description: str
-    cover_url: str
+    name: str | None = None
+    description: str | None = None
+    cover_url: str | None = None
     tracks: List[TrackSchema]

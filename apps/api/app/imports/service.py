@@ -17,9 +17,9 @@ class ImportService:
         if not provider.validate_url(url):
             raise ResourceNotFoundException(f"Playlist url {url} not supported")
 
-        tracks_data = provider.extract_playlist(url)
+        data = provider.extract_playlist(url)
 
-        return PlaylistSchema(tracks=tracks_data)
+        return PlaylistSchema(**data)
 
     @staticmethod
     def import_track(url: str) -> TrackSchema:
